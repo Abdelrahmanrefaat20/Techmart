@@ -1,13 +1,21 @@
-import { CartResponse, ProductDetailsResponse, ProductsResponse } from "@/types/response";
+import {
+  CartResponse,
+  ProductDetailsResponse,
+  ProductsResponse,
+} from "@/types/response";
+import { json } from "stream/consumers";
 
 class ApiServices {
   #headers = {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZGE1MmIxY2ZlYTNkMDAxM2Y3NjE4ZCIsIm5hbWUiOiJBaG1lZCBBYmQgQWwtTXV0aSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzkyNjkyOTIzLCJleHAiOjE4MDA0Njg5MjN9.qSmQhvs8WeuBsRVaL1wEMyzSfjXLSVHGik_ELLQVzWk",
-        "content-type": "application/json"
-    }
-    
-    async getProducts(): Promise<ProductsResponse> {
-    const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/v1/products");
+    token:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZGE1MmIxY2ZlYTNkMDAxM2Y3NjE4ZCIsIm5hbWUiOiJBaG1lZCBBYmQgQWwtTXV0aSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzkyNjkyOTIzLCJleHAiOjE4MDA0Njg5MjN9.qSmQhvs8WeuBsRVaL1wEMyzSfjXLSVHGik_ELLQVzWk",
+    "content-type": "application/json",
+  };
+
+  async getProducts(): Promise<ProductsResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + "/api/v1/products",
+    );
     const data = await response.json();
     return data;
   }
@@ -20,41 +28,45 @@ class ApiServices {
     return data;
   }
 
-
-  async addProductToCart(productId:string): Promise<CartResponse>{
-    const response= await fetch( `${process.env.NEXT_PUBLIC_BASE_URL}/api/v2/cart`, {
-      body: JSON.stringify({
-        productId
-      }),
-      headers: this.#headers
-      ,            method: "post"
-
-
-    })
-    const data =  await response.json()
+  async addProductToCart(productId: string): Promise<CartResponse> {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v2/cart`,
+      {
+        body: JSON.stringify({
+          productId,
+        }),
+        headers: this.#headers,
+        method: "post",
+      },
+    );
+    const data = await response.json();
     return data;
-
   }
 
-  async getUserCart(): Promise<CartResponse>{
-     const response= await fetch( `${process.env.NEXT_PUBLIC_BASE_URL}/api/v2/cart`, {
-      headers: this.#headers
-    })
-    const data =  await response.json()
+  async getUserCart(): Promise<CartResponse> {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v2/cart`,
+      {
+        headers: this.#headers,
+      },
+    );
+    const data = await response.json();
     return data;
-
   }
 
-    async removeProductFromCart(productId: string): Promise<CartResponse> {
-        const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/v2/cart/" + productId, {
-            method: "delete",
-            headers: this.#headers,
-            cache: "no-cache"
-        })
+  async removeProductFromCart(productId: string): Promise<CartResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + "/api/v2/cart/" + productId,
+      {
+        method: "delete",
+        headers: this.#headers,
+        cache: "no-cache",
+      },
+    );
 
-        const data = await response.json()
-        return data;
-    }
+    const data = await response.json();
+    return data;
+  }
 
   async clearCart(): Promise<CartResponse> {
     const response = await fetch(
@@ -62,6 +74,22 @@ class ApiServices {
       {
         method: "DELETE",
         headers: this.#headers,
+      },
+    );
+    const data = await response.json();
+    return data;
+  }
+
+  async UpdateCartProductQuantity(productId: string , count:number): Promise<CartResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + "/api/v2/cart/" + productId,
+      {
+        method: "PUT",
+        headers: this.#headers,
+        cache: "no-cache",
+        body: JSON.stringify({
+          count 
+        })
       },
     );
     const data = await response.json();

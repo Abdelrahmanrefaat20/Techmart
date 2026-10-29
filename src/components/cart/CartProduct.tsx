@@ -8,23 +8,45 @@ import { useState } from "react";
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black";
 
+let timeOut: string | number | NodeJS.Timeout;
+
 export default function CartProduct({
   price,
   count,
   product,
   removeProductFromCart,
+  updateProductCount,
 }: {
   price: number;
   count: number;
   product: Product;
   removeProductFromCart: (productId: string) => Promise<void>;
+  updateProductCount: (productId: string, count: number) => Promise<void>;
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isIncreasing, setIsIncreasing] = useState(false);
+  const [isDecreasing, setIsDecreasing] = useState(false);
+  const [innerCount, setInnerCount] = useState(count);
 
   async function handleRemoveProductFromCart() {
     setIsDeleting(true);
     await removeProductFromCart(product._id);
     setIsDeleting(false);
+  }
+
+  function handleUpdateProductCount(newCount: number) {
+    setInnerCount(newCount);
+    clearTimeout(timeOut);
+    timeOut = setTimeout(async () => {
+      if (newCount > count) {
+        setIsIncreasing(true);
+      } else {
+        setIsDecreasing(true);
+      }
+      await updateProductCount(product._id, newCount);
+      setIsIncreasing(false);
+      setIsDecreasing(false);
+    }, 500);
   }
 
   return (
@@ -99,24 +121,44 @@ export default function CartProduct({
             className="flex items-center rounded-full bg-white px-1"
           >
             <button
+              onClick={() => handleUpdateProductCount(innerCount - 1)}
               type="button"
               aria-label={`Decrease quantity of ${product.title}`}
               className={`flex size-10 items-center justify-center rounded-full hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-30 ${focus}`}
+              disabled={isIncreasing || isDecreasing || innerCount == 1}
             >
-              <Minus size={16} aria-hidden="true" />
+              {isDecreasing ? (
+                <Loader2
+                  size={16}
+                  className="animate-spin"
+                  aria-hidden="true"
+                />
+              ) : (
+                <Minus size={16} aria-hidden="true" />
+              )}
             </button>
             <span
               aria-live="polite"
               className="flex min-w-7 items-center justify-center text-sm tabular-nums"
             >
-              {count}
+              {innerCount}
             </span>
             <button
+              onClick={() => handleUpdateProductCount(innerCount + 1)}
               type="button"
               aria-label={`Increase quantity of ${product.title}`}
               className={`flex size-10 items-center justify-center rounded-full hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-30 ${focus}`}
+              disabled={isIncreasing || isDecreasing}
             >
-              <Plus size={16} aria-hidden="true" />
+              {isIncreasing ? (
+                <Loader2
+                  size={16}
+                  className="animate-spin"
+                  aria-hidden="true"
+                />
+              ) : (
+                <Plus size={16} aria-hidden="true" />
+              )}
             </button>
           </div>
         </div>

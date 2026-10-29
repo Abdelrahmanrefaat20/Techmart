@@ -14,7 +14,7 @@ import type { CartResponse } from "@/types/response";
 import { Button } from "../ui/button";
 import CartProduct from "./CartProduct";
 import apiServices from "@/services/apiServices";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function CartContents({
   cartResponse,
@@ -28,6 +28,12 @@ export default function CartContents({
   const products = innerCartResponse?.data.products ?? [];
   const [isClearing, setIsClearing] = useState(false);
 
+  useEffect(() => {
+    if (cartResponse != innerCartResponse) {
+      setInnerCartResponse(cartResponse);
+    }
+  }, []);
+
   async function removeProductFromCart(productId: string) {
     const response = await apiServices.removeProductFromCart(productId);
     // setState => rerender
@@ -40,6 +46,13 @@ export default function CartContents({
     // setState => rerender
     setInnerCartResponse(response);
     setIsClearing(false);
+  }
+  async function updateProductCount(productId: string, count: number) {
+    const response = await apiServices.UpdateCartProductQuantity(
+      productId,
+      count,
+    );
+    setInnerCartResponse(response);
   }
 
   return (
@@ -121,6 +134,7 @@ export default function CartContents({
                     price={price}
                     product={product}
                     removeProductFromCart={removeProductFromCart}
+                    updateProductCount={updateProductCount}
                   />
                 ))}
               </ul>
