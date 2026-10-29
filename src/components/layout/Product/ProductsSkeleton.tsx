@@ -8,7 +8,7 @@ export default function ProductsSkeleton() {
         <div className="h-4 w-56 animate-pulse rounded-full bg-muted" />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, index) => (
           <Card key={index} className="gap-0 overflow-hidden py-0">
             <div className="aspect-square animate-pulse bg-muted" />
