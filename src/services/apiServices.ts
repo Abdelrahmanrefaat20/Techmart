@@ -1,5 +1,6 @@
 import {
   CartResponse,
+  CheckoutResponse,
   ProductDetailsResponse,
   ProductsResponse,
 } from "@/types/response";
@@ -100,7 +101,21 @@ async getProducts(page: number = 1): Promise<ProductsResponse> {
     const data = await response.json();
     return data;
   }
-}
 
+
+  async checkoutCart(cartId: string, shippingAddress: any): Promise<CheckoutResponse> {
+        const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/orders/checkout-session/${cartId}?url=http://localhost:3000`, {
+
+        method: "POST",
+        headers: this.#headers,
+        body: JSON.stringify({
+          shippingAddress
+        })  
+      }
+    );
+    const data = await response.json();
+    return data;
+  }
+}
 const apiServices = new ApiServices();
 export default apiServices;

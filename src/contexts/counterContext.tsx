@@ -7,7 +7,10 @@ interface CounterContextType {
   setNumberOfCartItem: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const counterContext = createContext<CounterContextType | null>(null);
+export const counterContext = createContext<CounterContextType>({
+  NumberOfCartItem: 0,
+  setNumberOfCartItem: () => {},
+});
 
 
 

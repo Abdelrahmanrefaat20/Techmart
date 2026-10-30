@@ -31,7 +31,7 @@ export default function CartContents({
   const { setNumberOfCartItem } = useContext(counterContext);
 
   useEffect(() => {
-    setNumberOfCartItem(cartResponse?.numOfCartItems);
+    setNumberOfCartItem(cartResponse?.numOfCartItems ?? 0);
     if (cartResponse != innerCartResponse) {
       setInnerCartResponse(cartResponse);
     }
@@ -205,9 +205,8 @@ export default function CartContents({
                 Promo codes are not available yet.
               </p> */}
               <Link
-                href={"/checkout"}
+                href={"/checkout/"+ cartResponse?.cartId}
                 aria-disabled
-                onClick={(e) => e.preventDefault()}
                 type="button"
                 aria-describedby="checkout-note"
                 className="mt-5 flex min-h-13 w-full items-center justify-center gap-4 rounded-full bg-black px-5 text-sm font-medium text-white opacity-50 disabled:cursor-not-allowed"
