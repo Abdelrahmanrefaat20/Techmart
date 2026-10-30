@@ -14,7 +14,8 @@ import type { CartResponse } from "@/types/response";
 import { Button } from "../ui/button";
 import CartProduct from "./CartProduct";
 import apiServices from "@/services/apiServices";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { counterContext } from "@/contexts/counterContext";
 
 export default function CartContents({
   cartResponse,
@@ -27,8 +28,10 @@ export default function CartContents({
   const [innerCartResponse, setInnerCartResponse] = useState(cartResponse);
   const products = innerCartResponse?.data.products ?? [];
   const [isClearing, setIsClearing] = useState(false);
+  const { setNumberOfCartItem } = useContext(counterContext);
 
   useEffect(() => {
+    setNumberOfCartItem(cartResponse?.numOfCartItems);
     if (cartResponse != innerCartResponse) {
       setInnerCartResponse(cartResponse);
     }
@@ -38,6 +41,7 @@ export default function CartContents({
     const response = await apiServices.removeProductFromCart(productId);
     // setState => rerender
     setInnerCartResponse(response);
+    setNumberOfCartItem(response?.numOfCartItems);
   }
 
   async function clearCart() {
@@ -46,6 +50,7 @@ export default function CartContents({
     // setState => rerender
     setInnerCartResponse(response);
     setIsClearing(false);
+    setNumberOfCartItem(0);
   }
   async function updateProductCount(productId: string, count: number) {
     const response = await apiServices.UpdateCartProductQuantity(
@@ -173,7 +178,7 @@ export default function CartContents({
               <p className="mt-1 text-right text-xs text-neutral-500">
                 Before delivery
               </p>
-              <div className="mt-6 flex gap-3">
+              {/* <div className="mt-6 flex gap-3">
                 <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-white px-4">
                   <Tag
                     size={19}
@@ -198,14 +203,17 @@ export default function CartContents({
               </div>
               <p id="promo-note" className="mt-2 px-1 text-xs text-neutral-500">
                 Promo codes are not available yet.
-              </p>
-              <button
+              </p> */}
+              <Link
+                href={"/checkout"}
+                aria-disabled
+                onClick={(e) => e.preventDefault()}
                 type="button"
                 aria-describedby="checkout-note"
                 className="mt-5 flex min-h-13 w-full items-center justify-center gap-4 rounded-full bg-black px-5 text-sm font-medium text-white opacity-50 disabled:cursor-not-allowed"
               >
                 Go to Checkout <ArrowRight size={20} aria-hidden="true" />
-              </button>
+              </Link>
               <p
                 id="checkout-note"
                 className="mt-2 text-center text-xs text-neutral-500"

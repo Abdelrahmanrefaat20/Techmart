@@ -5,10 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import apiServices from "@/services/apiServices";
 import ProductCard from "./ProductCard";
 import ProductsSkeleton from "./ProductsSkeleton";
+import { ProductsPageProps } from "@/interfaces/product";
 
 const numberFormatter = new Intl.NumberFormat("en-US");
+export default async function ProductsPage(
+) {
 
-export default function ProductsPage() {
+
   return (
     <main className="flex-1 bg-muted/40">
       <section className="relative overflow-hidden bg-[#1d2c26] text-white">
@@ -100,6 +103,8 @@ async function ProductsSection() {
           ))}
         </div>
       )}
+
+      
     </section>
   );
 }

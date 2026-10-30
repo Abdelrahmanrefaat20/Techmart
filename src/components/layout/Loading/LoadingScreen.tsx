@@ -94,7 +94,7 @@ export default function LoadingScreen({
           </div>
         </div>
 
-        <p className="mt-6 text-sm font-medium text-white/85">{label}</p>
+        {/* <p className="mt-6 text-sm font-medium text-white/85">{label}</p> */}
         <p className="mt-1.5 text-xs text-white/45">
           Please hold on while we bring the page to you.
         </p>

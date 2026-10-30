@@ -38,3 +38,9 @@ export interface ProductI {
     updatedAt: string;
     id: string;
 }
+
+export interface ProductsPageProps {
+  searchParams: Promise<{
+    page?: number;
+  }>;
+}

@@ -1,12 +1,13 @@
-import { Suspense } from "react";
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Roboto } from "next/font/google";
-import "./globals.css";
-import { cn } from "@/lib/utils";
-import Navbar from "@/components/layout/Navbar/navbar";
 import Footer from "@/components/layout/Footer/Footer";
 import RouteTransition from "@/components/layout/Loading/RouteTransition";
-import { Toaster } from "@/components/ui/toast"
+import Navbar from "@/components/layout/Navbar/navbar";
+import { Toaster } from "@/components/ui/toast";
+import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono, Roboto } from "next/font/google";
+import { Suspense } from "react";
+import "./globals.css";
+import MainProvider from "@/providers/MainProvider";
 const roboto = Roboto({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Geist({
@@ -31,15 +32,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", roboto.variable)}
     >
       <body className="min-h-full flex flex-col">
-        <Suspense fallback={null}>
-          <Navbar />
-        </Suspense>
-        <Suspense fallback={null}>
-          <RouteTransition />
-        </Suspense>
-        {children}
-        <Toaster />
-        <Footer />
+
+
+        <MainProvider>{children}</MainProvider>
       </body>
     </html>
   );

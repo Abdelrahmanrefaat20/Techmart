@@ -11,14 +11,19 @@ class ApiServices {
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZGE1MmIxY2ZlYTNkMDAxM2Y3NjE4ZCIsIm5hbWUiOiJBaG1lZCBBYmQgQWwtTXV0aSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzkyNjkyOTIzLCJleHAiOjE4MDA0Njg5MjN9.qSmQhvs8WeuBsRVaL1wEMyzSfjXLSVHGik_ELLQVzWk",
     "content-type": "application/json",
   };
+async getProducts(page: number = 1): Promise<ProductsResponse> {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/products?limit=56&page=${page}`
+  );
 
-  async getProducts(): Promise<ProductsResponse> {
-    const response = await fetch(
-      process.env.NEXT_PUBLIC_BASE_URL + "/api/v1/products",
-    );
-    const data = await response.json();
-    return data;
+  if (!response.ok) {
+    throw new Error("Failed to fetch products");
   }
+
+  const data: ProductsResponse = await response.json();
+
+  return data;
+}
 
   async getProductDetails(productId: string): Promise<ProductDetailsResponse> {
     const response = await fetch(
