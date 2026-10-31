@@ -27,7 +27,7 @@ export default function Navbar() {
          const {  NumberOfCartItem } = useContext(counterContext)
 
   return (
-  <div className="sticky top-0 z-10 bg-white">      <div className="bg-[#1d2c26] px-4 py-2.5 text-center text-xs tracking-wide text-white">
+  <div className="sticky top-0 z-1000 bg-white">      <div className="bg-[#1d2c26] px-4 py-2.5 text-center text-xs tracking-wide text-white">
         Good tech. Great possibilities.{" "}
         <span className="ml-2 text-[#ceec9b]">
           Find your next everyday upgrade.
