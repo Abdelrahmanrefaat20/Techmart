@@ -104,7 +104,7 @@ async getProducts(page: number = 1): Promise<ProductsResponse> {
 
 
   async checkoutCart(cartId: string, shippingAddress: any): Promise<CheckoutResponse> {
-        const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/orders/checkout-session/${cartId}?url=http://localhost:3000`, {
+        const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/orders/checkout-session/${cartId}?url=https://easybuy-olive-nu.vercel.app`, {
 
         method: "POST",
         headers: this.#headers,
