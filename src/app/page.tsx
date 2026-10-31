@@ -221,7 +221,7 @@ export default async function Home() {
                   Top rated
                 </div>
 
-                <div className="absolute -bottom-4 left-4 flex items-center gap-2 rounded-2xl bg-white px-4 py-3 text-[#171717] shadow-xl">
+                <div className="absolute -bottom-12 left-4 flex items-center gap-2 rounded-2xl bg-white px-4 py-3 text-[#171717] shadow-xl">
                   <Star
                     size={16}
                     className="fill-amber-400 text-amber-400"
