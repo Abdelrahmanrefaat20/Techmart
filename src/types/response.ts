@@ -57,5 +57,16 @@ export type CheckoutResponse = {
         "cancel_url": string
     }
 }
+
+export type SignInResponse = {
+    message: string;
+    user?: {
+        name: string;
+        email: string;
+        role: string;
+    },
+    token?: string;
+    statusMsg?: string
+}
 export type ProductsResponse = ResponseT<ProductI>
 export type ProductDetailsResponse = { data: ProductI } 

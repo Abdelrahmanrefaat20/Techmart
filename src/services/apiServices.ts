@@ -3,6 +3,7 @@ import {
   CheckoutResponse,
   ProductDetailsResponse,
   ProductsResponse,
+  SignInResponse,
 } from "@/types/response";
 import { json } from "stream/consumers";
 
@@ -115,6 +116,21 @@ async getProducts(page: number = 1): Promise<ProductsResponse> {
     );
     const data = await response.json();
     return data;
+  }
+
+  async signin(email: string , password: string):Promise<SignInResponse>{
+
+    const response= await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/signin`,{
+      method:"POST",
+       headers: this.#headers,
+        body: JSON.stringify({
+          email,
+          password
+        })  
+    })
+       const data = await response.json();
+    return data;
+
   }
 }
 const apiServices = new ApiServices();
