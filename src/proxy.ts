@@ -4,7 +4,11 @@ import type { NextRequest } from 'next/server'
 
 export async function proxy(request: NextRequest) {
 
-    const token = await getToken({ req: request })
+    // Must be the same secret used by the NextAuth handler, otherwise the
+    // session cookie cannot be decrypted and every user looks unauthenticated.
+    const secret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET;
+
+    const token = await getToken({ req: request, secret })
 
     const isAuthenticated = !!token;
     const pathname = request.nextUrl.pathname;
