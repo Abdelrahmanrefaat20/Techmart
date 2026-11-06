@@ -29,15 +29,15 @@ const handler = NextAuth({
           credentials?.password ?? "",
         );
 
-        if (response.message == "success") {
-          return {
-            ...response.user,
-            token: response.token,
-            id: response.user?.email,
-          };
-        } else {
-          return null;
-        }
+         if (response.message == "success" && response.user?.email && response.token) {
+    return {
+      ...response.user,
+      token: response.token,
+      id: response.user.email,
+    };
+  } else {
+    return null;
+  }
       },
     }),
   ],
