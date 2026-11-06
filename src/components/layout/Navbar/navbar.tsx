@@ -1,8 +1,10 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { counterContext } from "@/contexts/counterContext";
 import { cn } from "cn";
 import { ArrowRight, ShoppingCart, Zap } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useContext } from "react";
@@ -20,14 +22,22 @@ const navLinks = [
     title: "Brands",
     href: "/brands",
   },
+  {
+    title: "Orders",
+    href: "/allorders",
+  },
 ];
 
 export default function Navbar() {
   const pathName = usePathname();
-         const {  NumberOfCartItem } = useContext(counterContext)
+  const session = useSession();
+  console.log(session);
+  const { NumberOfCartItem } = useContext(counterContext);
 
   return (
-  <div className="sticky top-0 z-1000 bg-white">      <div className="bg-[#1d2c26] px-4 py-2.5 text-center text-xs tracking-wide text-white">
+    <div className="sticky top-0 z-1000 bg-white">
+      {" "}
+      <div className="bg-[#1d2c26] px-4 py-2.5 text-center text-xs tracking-wide text-white">
         Good tech. Great possibilities.{" "}
         <span className="ml-2 text-[#ceec9b]">
           Find your next everyday upgrade.
@@ -49,52 +59,74 @@ export default function Navbar() {
             aria-label="Main navigation"
             className="order-3 flex w-full justify-center gap-7 border-t border-[#e5e7df] pt-4 text-sm font-medium sm:order-none sm:w-auto sm:border-0 sm:pt-0"
           >
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "transition-colors hover:text-[#64843f]",
-                  pathName.includes(link.href)
-                    ? "text-[#64843f] font-bold"
-                    : "",
-                )}
-              >
-                {link.title}
-              </Link>
-            ))}
+            {navLinks
+              .filter((element) => {
+                return !(
+                  session.status == "unauthenticated" &&
+                  element.href == "/allorders"
+                );
+              })
+              .map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "transition-colors hover:text-[#64843f]",
+                    pathName.includes(link.href)
+                      ? "text-[#64843f] font-bold"
+                      : "",
+                  )}
+                >
+                  {link.title}
+                </Link>
+              ))}
           </nav>
-    <div className="flex gap-3 items-center">
 
+          <div className="flex gap-3 items-center">
+            {session.status == "authenticated" && (
+              <>
+                <Link href={"/cart"}>
+                  <div className="relative">
+                    <span className="absolute bottom-1 inset-e-1 translate-x-1/2 -translate-y-1/2">
+                      <Badge variant="destructive">{NumberOfCartItem}</Badge>
+                    </span>
 
+                    <ShoppingCart className="mr-2 h-5 w-5" />
+                  </div>
+                </Link>
+              </>
+            )}
 
-            <Link href={"/cart"}>
-            <div className="relative">
-              <span className="absolute bottom-1 inset-e-1 translate-x-1/2 -translate-y-1/2">
-                  <Badge variant="destructive">{NumberOfCartItem}</Badge>
-              </span>
-              
-              <ShoppingCart className="mr-2 h-5 w-5" />
-            </div>
-            </Link>
-            <Link
-              href="/api/auth/signin"
-              className="flex items-center gap-2 rounded-full border border-[#d9dfd3] px-4 py-2.5 text-xs font-semibold transition-colors hover:bg-[#eaf1e0]"
-            >
-              Sign In
-            </Link>
-            <a
-              href="#collection"
-              className="flex items-center gap-2 rounded-full border border-[#d9dfd3] px-4 py-2.5 text-xs font-semibold transition-colors hover:bg-[#eaf1e0]"
-            >
-              Sign Up
-            </a>
-            <a
-              href="#collection"
-              className="flex items-center gap-2 rounded-full border border-[#d9dfd3] px-4 py-2.5 text-xs font-semibold transition-colors hover:bg-[#eaf1e0]"
-            >
-              Sign Out
-            </a>
+            {session.status == "unauthenticated" && (
+              <>
+                <Link
+                  href="/api/auth/signin"
+                  className="flex items-center gap-2 rounded-full border border-[#d9dfd3] px-4 py-2.5 text-xs font-semibold transition-colors hover:bg-[#eaf1e0]"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="flex items-center gap-2 rounded-full border border-[#d9dfd3] px-4 py-2.5 text-xs font-semibold transition-colors hover:bg-[#eaf1e0]"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+
+            {session.status == "authenticated" && (
+              <>
+                <Button 
+                onClick={()=> signOut({
+                  callbackUrl:"/auth/signin"
+                })}
+                
+                  className="bg-white flex items-center gap-2 rounded-full border border-[#d9dfd3] px-4 py-2.5 text-xs font-semibold transition-colors hover:bg-[#eaf1e0] text-black"
+                >
+                  Sign Out
+                </Button>
+              </>
+            )}
           </div>
         </header>
       </div>
