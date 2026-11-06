@@ -13,19 +13,19 @@ class ApiServices {
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZGE1MmIxY2ZlYTNkMDAxM2Y3NjE4ZCIsIm5hbWUiOiJBaG1lZCBBYmQgQWwtTXV0aSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzkyNjkyOTIzLCJleHAiOjE4MDA0Njg5MjN9.qSmQhvs8WeuBsRVaL1wEMyzSfjXLSVHGik_ELLQVzWk",
     "content-type": "application/json",
   };
-async getProducts(page: number = 1): Promise<ProductsResponse> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/products?limit=56&page=${page}`
-  );
+  async getProducts(page: number = 1): Promise<ProductsResponse> {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/products?limit=56&page=${page}`,
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch products");
+    if (!response.ok) {
+      throw new Error("Failed to fetch products");
+    }
+
+    const data: ProductsResponse = await response.json();
+
+    return data;
   }
-
-  const data: ProductsResponse = await response.json();
-
-  return data;
-}
 
   async getProductDetails(productId: string): Promise<ProductDetailsResponse> {
     const response = await fetch(
@@ -87,7 +87,10 @@ async getProducts(page: number = 1): Promise<ProductsResponse> {
     return data;
   }
 
-  async UpdateCartProductQuantity(productId: string , count:number): Promise<CartResponse> {
+  async UpdateCartProductQuantity(
+    productId: string,
+    count: number,
+  ): Promise<CartResponse> {
     const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + "/api/v2/cart/" + productId,
       {
@@ -95,42 +98,72 @@ async getProducts(page: number = 1): Promise<ProductsResponse> {
         headers: this.#headers,
         cache: "no-cache",
         body: JSON.stringify({
-          count 
-        })
+          count,
+        }),
       },
     );
     const data = await response.json();
     return data;
   }
 
-
-  async checkoutCart(cartId: string, shippingAddress: any): Promise<CheckoutResponse> {
-        const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/orders/checkout-session/${cartId}?url=https://easybuy-olive-nu.vercel.app`, {
-
+  async checkoutCart(
+    cartId: string,
+    shippingAddress: any,
+  ): Promise<CheckoutResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL +
+        `/api/v1/orders/checkout-session/${cartId}?url=https://easybuy-olive-nu.vercel.app`,
+      {
         method: "POST",
         headers: this.#headers,
         body: JSON.stringify({
-          shippingAddress
-        })  
-      }
+          shippingAddress,
+        }),
+      },
     );
     const data = await response.json();
     return data;
   }
 
-  async signin(email: string , password: string):Promise<SignInResponse>{
-
-    const response= await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/signin`,{
-      method:"POST",
-       headers: this.#headers,
+  async signin(email: string, password: string): Promise<SignInResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/signin`,
+      {
+        method: "POST",
+        headers: this.#headers,
         body: JSON.stringify({
           email,
-          password
-        })  
-    })
-       const data = await response.json();
+          password,
+        }),
+      },
+    );
+    const data = await response.json();
     return data;
+  }
 
+  async signup(
+    name: string,
+    email: string,
+    password: string,
+    rePassword: string,
+    phone: string,
+  ): Promise<SignInResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/signup`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          rePassword,
+          phone,
+        }),
+      },
+    );
+    const data = await response.json();
+    return data;
   }
 }
 const apiServices = new ApiServices();
