@@ -77,12 +77,12 @@ export default function Navbar() {
               <ShoppingCart className="mr-2 h-5 w-5" />
             </div>
             </Link>
-            <a
-              href="#collection"
+            <Link
+              href="/api/auth/signin"
               className="flex items-center gap-2 rounded-full border border-[#d9dfd3] px-4 py-2.5 text-xs font-semibold transition-colors hover:bg-[#eaf1e0]"
             >
               Sign In
-            </a>
+            </Link>
             <a
               href="#collection"
               className="flex items-center gap-2 rounded-full border border-[#d9dfd3] px-4 py-2.5 text-xs font-semibold transition-colors hover:bg-[#eaf1e0]"
