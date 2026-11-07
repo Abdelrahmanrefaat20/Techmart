@@ -18,6 +18,8 @@ import { toast } from "@/components/ui/toast";
 import apiServices from "@/services/apiServices";
 import { useSession } from "next-auth/react";
 import { useParams , useRouter } from "next/navigation";
+import { useContext } from "react";
+import { counterContext } from "@/contexts/counterContext";
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black";
 
@@ -96,6 +98,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 
 export default function Checkout() {
    const route = useRouter();
+   const {setNumberOfCartItem}= useContext(counterContext)
   const {
     register,
     handleSubmit,
@@ -155,6 +158,8 @@ export default function Checkout() {
           });
           console.log("Cash order response:", response);
           route.push("/allorders")
+          setNumberOfCartItem(0)
+          
         }
 
         return;
