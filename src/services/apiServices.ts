@@ -5,14 +5,25 @@ import {
   ProductsResponse,
   SignInResponse,
 } from "@/types/response";
-import { json } from "stream/consumers";
+
+type ApiHeaders = {
+  "content-type": string;
+  token?: string;
+};
 
 class ApiServices {
-  #headers = {
-    token:
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZGE1MmIxY2ZlYTNkMDAxM2Y3NjE4ZCIsIm5hbWUiOiJBaG1lZCBBYmQgQWwtTXV0aSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzkyNjkyOTIzLCJleHAiOjE4MDA0Njg5MjN9.qSmQhvs8WeuBsRVaL1wEMyzSfjXLSVHGik_ELLQVzWk",
-    "content-type": "application/json",
-  };
+  /**
+   * Builds the headers for a request. The `token` is the API token stored in
+   * the NextAuth session (see `authOptions` callbacks), so it is only sent
+   * when the caller is signed in.
+   */
+  #headers(token?: string): ApiHeaders {
+    return {
+      "content-type": "application/json",
+      ...(token ? { token } : {}),
+    };
+  }
+
   async getProducts(page: number = 1): Promise<ProductsResponse> {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/products?limit=56&page=${page}`,
@@ -35,14 +46,17 @@ class ApiServices {
     return data;
   }
 
-  async addProductToCart(productId: string): Promise<CartResponse> {
+  async addProductToCart(
+    productId: string,
+    token?: string,
+  ): Promise<CartResponse> {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v2/cart`,
       {
         body: JSON.stringify({
           productId,
         }),
-        headers: this.#headers,
+        headers: this.#headers(token),
         method: "post",
       },
     );
@@ -50,23 +64,26 @@ class ApiServices {
     return data;
   }
 
-  async getUserCart(): Promise<CartResponse> {
+  async getUserCart(token?: string): Promise<CartResponse> {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v2/cart`,
       {
-        headers: this.#headers,
+        headers: this.#headers(token),
       },
     );
     const data = await response.json();
     return data;
   }
 
-  async removeProductFromCart(productId: string): Promise<CartResponse> {
+  async removeProductFromCart(
+    productId: string,
+    token?: string,
+  ): Promise<CartResponse> {
     const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + "/api/v2/cart/" + productId,
       {
         method: "delete",
-        headers: this.#headers,
+        headers: this.#headers(token),
         cache: "no-cache",
       },
     );
@@ -75,12 +92,12 @@ class ApiServices {
     return data;
   }
 
-  async clearCart(): Promise<CartResponse> {
+  async clearCart(token?: string): Promise<CartResponse> {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v2/cart`,
       {
         method: "DELETE",
-        headers: this.#headers,
+        headers: this.#headers(token),
       },
     );
     const data = await response.json();
@@ -90,12 +107,13 @@ class ApiServices {
   async UpdateCartProductQuantity(
     productId: string,
     count: number,
+    token?: string,
   ): Promise<CartResponse> {
     const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + "/api/v2/cart/" + productId,
       {
         method: "PUT",
-        headers: this.#headers,
+        headers: this.#headers(token),
         cache: "no-cache",
         body: JSON.stringify({
           count,
@@ -109,13 +127,14 @@ class ApiServices {
   async checkoutCart(
     cartId: string,
     shippingAddress: any,
+    token?: string,
   ): Promise<CheckoutResponse> {
     const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL +
         `/api/v1/orders/checkout-session/${cartId}?url=https://easybuy-olive-nu.vercel.app`,
       {
         method: "POST",
-        headers: this.#headers,
+        headers: this.#headers(token),
         body: JSON.stringify({
           shippingAddress,
         }),
@@ -130,7 +149,7 @@ class ApiServices {
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/signin`,
       {
         method: "POST",
-        headers: this.#headers,
+        headers: this.#headers(),
         body: JSON.stringify({
           email,
           password,
@@ -152,7 +171,7 @@ class ApiServices {
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/signup`,
       {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: this.#headers(),
         body: JSON.stringify({
           name,
           email,

@@ -1,8 +1,13 @@
+import { getServerSession } from "next-auth";
 import CartContents from "@/components/cart/CartContents";
+import { authOptions } from "@/lib/authOptions";
 import apiServices from "@/services/apiServices";
 
 export default async function Cart() {
-  const response = await apiServices.getUserCart().catch(() => null);
+  const session = await getServerSession(authOptions);
+  const response=await apiServices
+    .getUserCart(session?.user?.token)
+    .catch(() => null);
 
   if (!response?.data?.products) {
     return (

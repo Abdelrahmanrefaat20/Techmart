@@ -14,8 +14,12 @@ import type { CartResponse } from "@/types/response";
 import { Button } from "../ui/button";
 import CartProduct from "./CartProduct";
 import apiServices from "@/services/apiServices";
+import { useSession } from "next-auth/react";
 import { useContext, useEffect, useState } from "react";
 import { counterContext } from "@/contexts/counterContext";
+
+const focus =
+  "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black";
 
 export default function CartContents({
   cartResponse,
@@ -29,6 +33,8 @@ export default function CartContents({
   const products = innerCartResponse?.data.products ?? [];
   const [isClearing, setIsClearing] = useState(false);
   const { setNumberOfCartItem } = useContext(counterContext);
+  const { data: session } = useSession();
+  const token = session?.user?.token;
 
   useEffect(() => {
     setNumberOfCartItem(cartResponse?.numOfCartItems ?? 0);
@@ -38,7 +44,7 @@ export default function CartContents({
   }, []);
 
   async function removeProductFromCart(productId: string) {
-    const response = await apiServices.removeProductFromCart(productId);
+    const response = await apiServices.removeProductFromCart(productId, token);
     // setState => rerender
     setInnerCartResponse(response);
     setNumberOfCartItem(response?.numOfCartItems);
@@ -46,7 +52,7 @@ export default function CartContents({
 
   async function clearCart() {
     setIsClearing(true);
-    const response = await apiServices.clearCart();
+    const response = await apiServices.clearCart(token);
     // setState => rerender
     setInnerCartResponse(response);
     setIsClearing(false);
@@ -56,6 +62,7 @@ export default function CartContents({
     const response = await apiServices.UpdateCartProductQuantity(
       productId,
       count,
+      token,
     );
     setInnerCartResponse(response);
   }

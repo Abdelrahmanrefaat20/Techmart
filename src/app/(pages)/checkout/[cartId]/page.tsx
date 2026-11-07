@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "@/components/ui/toast";
 import apiServices from "@/services/apiServices";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 
 const focus =
@@ -108,28 +109,33 @@ export default function Checkout() {
     },
   });
    const { cartId } = useParams(); 
+  const { data: session } = useSession();
 
   const shippingAddress = useWatch({ control });
   const detailsLeft = 200 - (shippingAddress.details?.length ?? 0);
 
   async function onSubmit(values: CheckoutValues) {
     try {
-      // const token = localStorage.getItem("token");
+      const token = session?.user?.token;
 
-      // if (!token) {
-      //   toast.add({
-      //     title: "Authentication required",
-      //     description: "Please log in before checking out.",
-      //     type: "error",
-      //   });
-      //   return;
-      // }
+      if (!token) {
+        toast.add({
+          title: "Authentication required",
+          description: "Please log in before checking out.",
+          type: "error",
+        });
+        return;
+      }
 
-    const response = await apiServices.checkoutCart(cartId as string, {
-      details: values.details,
-      phone: values.phone,
-      city: values.city,
-    });
+      const response = await apiServices.checkoutCart(
+        cartId as string,
+        {
+          details: values.details,
+          phone: values.phone,
+          city: values.city,
+        },
+        token,
+      );
 
        open(response.session.url, "_self");
 

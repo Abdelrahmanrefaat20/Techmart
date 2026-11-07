@@ -31,7 +31,6 @@ const navLinks = [
 export default function Navbar() {
   const pathName = usePathname();
   const session = useSession();
-  console.log(session);
   const { NumberOfCartItem } = useContext(counterContext);
 
   return (

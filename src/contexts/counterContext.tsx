@@ -1,5 +1,7 @@
+"use client";
 
 import apiServices from "@/services/apiServices";
+import { useSession } from "next-auth/react";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 
 interface CounterContextType {
@@ -12,19 +14,30 @@ export const counterContext = createContext<CounterContextType>({
   setNumberOfCartItem: () => {},
 });
 
-
-
-export default function CounterContextProvider({children}:{children:ReactNode}) {
+export default function CounterContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const [NumberOfCartItem, setNumberOfCartItem] = useState(0);
-
-  async function getUserCart() {
-    const response = await apiServices.getUserCart();
-      setNumberOfCartItem(response.numOfCartItems);
-  }
+  const { data: session, status } = useSession();
+  const token = session?.user?.token;
 
   useEffect(() => {
-    getUserCart();
-  }, []); 
+    if (status === "loading") {
+      return;
+    }
+
+    if (!token) {
+      setNumberOfCartItem(0);
+      return;
+    }
+
+    apiServices
+      .getUserCart(token)
+      .then((response) => setNumberOfCartItem(response?.numOfCartItems ?? 0))
+      .catch(() => setNumberOfCartItem(0));
+  }, [token, status]);
 
   return (
     <counterContext.Provider

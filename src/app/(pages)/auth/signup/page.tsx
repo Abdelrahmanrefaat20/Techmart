@@ -26,8 +26,7 @@ import {
   Zap,
 } from "lucide-react";
 import { signIn } from "next-auth/react";
-import  apiServices  from '@/services/apiServices';
-import { name } from "next/dist/server/ci-info";
+import apiServices from "@/services/apiServices";
 
 const signupSchema = z
   .object({
