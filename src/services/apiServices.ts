@@ -1,3 +1,5 @@
+import { CreateCashOrderResponse } from "@/interfaces/product";
+import type { OrderI } from "@/interfaces/order";
 import {
     BrandResponse,
   CartResponse,
@@ -19,6 +21,7 @@ type ShippingAddress = {
   details: string;
   phone: string;
   city: string;
+  postalCode?: number;
 };
 
 class ApiServices {
@@ -249,7 +252,42 @@ class ApiServices {
     return data;
   }
 
+ async createCashOrder(
+    cartId: string,
+    shippingAddress: ShippingAddress,
+    token?: string,
+  ): Promise<CreateCashOrderResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL +
+        `/api/v2/orders/${cartId}`,
+      {
+        method: "POST",
+        headers: this.#headers(token),
+        body: JSON.stringify({
+          shippingAddress,
+        }),
+      },
+    );
+    const data = await response.json();
+    return data;
+  }
+
+
+  async getUserOrders(userId: string): Promise<OrderI[]> {
+    console.log("Fetching orders for user:", userId);
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/orders/user/${userId}`,
+      {
+        method: "GET",
+      },
+    );
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  }
+
+
 
 }
+
 const apiServices = new ApiServices();
 export default apiServices;

@@ -17,8 +17,7 @@ import { z } from "zod";
 import { toast } from "@/components/ui/toast";
 import apiServices from "@/services/apiServices";
 import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-
+import { useParams , useRouter } from "next/navigation";
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black";
 
@@ -35,6 +34,10 @@ const checkoutSchema = z.object({
       /^01[0125]\d{8}$/,
       "Enter a valid Egyptian mobile number, like 01010700999.",
     ),
+postalCode: z
+  .string()
+  .optional(),
+  paymentMethod: z.enum(["cash", "online"]),
   details: z
     .string()
     .trim()
@@ -74,8 +77,6 @@ const cities = [
   "South Sinai",
 ];
 
-
-
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) {
     return null;
@@ -94,6 +95,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 }
 
 export default function Checkout() {
+   const route = useRouter();
   const {
     register,
     handleSubmit,
@@ -106,15 +108,19 @@ export default function Checkout() {
       details: "",
       phone: "",
       city: "",
+      postalCode: "",
+      paymentMethod: "online",
     },
   });
-   const { cartId } = useParams(); 
+
+  const { cartId } = useParams();
   const { data: session } = useSession();
 
   const shippingAddress = useWatch({ control });
   const detailsLeft = 200 - (shippingAddress.details?.length ?? 0);
 
   async function onSubmit(values: CheckoutValues) {
+
     try {
       const token = session?.user?.token;
 
@@ -127,18 +133,40 @@ export default function Checkout() {
         return;
       }
 
+      const shippingAddress = {
+        details: values.details,
+        phone: values.phone,
+        city: values.city,
+        postalCode: values.postalCode ? Number(values.postalCode) : undefined,
+      };
+
+      if (values.paymentMethod === "cash") {
+        const response = await apiServices.createCashOrder(
+          cartId as string,
+          shippingAddress,
+          token,
+        );
+
+        if (response.status === "success") {
+          toast.add({
+            title: "Order created successfully",
+            description: "Your order has been placed with cash on delivery.",
+            type: "success",
+          });
+          console.log("Cash order response:", response);
+          route.push("/allorders")
+        }
+
+        return;
+      }
+
       const response = await apiServices.checkoutCart(
         cartId as string,
-        {
-          details: values.details,
-          phone: values.phone,
-          city: values.city,
-        },
+        shippingAddress,
         token,
       );
 
-       open(response.session.url, "_self");
-
+      open(response.session.url, "_self");
     } catch (error) {
       console.error(error);
 
@@ -191,8 +219,6 @@ export default function Checkout() {
             Secure checkout
           </span>
         </div>
-
-
 
         <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,1fr)] lg:gap-6">
           <form
@@ -291,6 +317,24 @@ export default function Checkout() {
                 )}
               </div>
 
+              <div className="sm:col-span-1">
+                <label
+                  htmlFor="postalCode"
+                  className="mb-2 block text-sm font-medium"
+                >
+                  Postal Code
+                </label>
+                <input
+                  id="postalCode"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="postal-code"
+                  placeholder="12345"
+                  className={`${fieldClass} h-13 px-4`}
+                  {...register("postalCode")}
+                />
+              </div>
+
               <div className="sm:col-span-2">
                 <label
                   htmlFor="details"
@@ -329,7 +373,43 @@ export default function Checkout() {
                 </div>
               </div>
             </div>
+            <div className="mt-8">
+              <h2 className="mb-4 text-lg font-semibold">Payment method</h2>
 
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-neutral-200 bg-[#faf9f6] p-4 transition-colors has-[:checked]:border-black has-[:checked]:bg-neutral-50">
+                  <input
+                    type="radio"
+                    value="cash"
+                    className="size-4 accent-black"
+                    {...register("paymentMethod")}
+                  />
+
+                  <div>
+                    <p className="text-sm font-semibold">Cash on delivery</p>
+                    <p className="mt-1 text-xs text-neutral-500">
+                      Pay when your order arrives.
+                    </p>
+                  </div>
+                </label>
+
+                <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-neutral-200 bg-[#faf9f6] p-4 transition-colors has-[:checked]:border-black has-[:checked]:bg-neutral-50">
+                  <input
+                    type="radio"
+                    value="online"
+                    className="size-4 accent-black"
+                    {...register("paymentMethod")}
+                  />
+
+                  <div>
+                    <p className="text-sm font-semibold">Online payment</p>
+                    <p className="mt-1 text-xs text-neutral-500">
+                      Pay securely using your card.
+                    </p>
+                  </div>
+                </label>
+              </div>
+            </div>
             <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/cart"
@@ -347,7 +427,11 @@ export default function Checkout() {
                 disabled={isSubmitting}
                 className={`group flex min-h-13 flex-1 items-center justify-center gap-3 rounded-full bg-black px-6 text-sm font-medium text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60 ${focus}`}
               >
-                {isSubmitting ? "Checking details..." : "Continue to payment"}
+                {isSubmitting
+                  ? "Processing order..."
+                  : shippingAddress.paymentMethod === "cash"
+                    ? "Place order"
+                    : "Continue to payment"}
                 <ArrowRight
                   size={18}
                   aria-hidden="true"
