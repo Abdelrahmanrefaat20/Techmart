@@ -223,9 +223,10 @@ class ApiServices {
     const data = await response.json();
     return data;
   }
+ 
   async getBrands(): Promise<BrandResponse> {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/brands`,
+       const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/brands`,
       {
         method: "GET",
         headers: this.#headers(),
@@ -234,6 +235,8 @@ class ApiServices {
     const data = await response.json();
     return data;
   }
+
+ 
   async getSpecificBrands(id: string): Promise<SpecificBrandResponse> {
     const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/brands/${id}`,

@@ -59,7 +59,7 @@ async function BrandDetails({ params }: BrandPageProps) {
   const [brandResult, productsResult, brandsResult] = await Promise.all([
     apiServices.getSpecificBrands(brandId).catch(() => null),
     apiServices.getProducts(1, undefined, brandId).catch(() => null),
-    apiServices.getBrands(1, 50).catch(() => null),
+    apiServices.getBrands().catch(() => null),
   ]);
 
   const brand = brandResult?.data;

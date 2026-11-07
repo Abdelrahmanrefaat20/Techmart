@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import BrandGrid from "@/components/layout/Brand/BrandGrid";
 import apiServices from "@/services/apiServices";
-import type { BrandResponse } from "@/types/response";
 
 export const metadata: Metadata = {
   title: "Brands · TechMart",
@@ -27,32 +26,6 @@ const focusOnDark =
 
 const numberFormatter = new Intl.NumberFormat("en-US");
 
-/**
- * The brands endpoint caps the page size at 50, so this walks the remaining
- * pages and returns one combined list.
- */
-async function loadAllBrands(): Promise<BrandResponse | null> {
-  const firstPage = await apiServices.getBrands().catch(() => null);
-
-  if (!firstPage) {
-    return null;
-  }
-
-  const numberOfPages = firstPage.metadata?.numberOfPages ?? 1;
-  const remainingPages = await Promise.all(
-    Array.from({ length: Math.max(numberOfPages - 1, 0) }, (_, index) =>
-      apiServices.getBrands().catch(() => null),
-    ),
-  );
-
-  return {
-    ...firstPage,
-    data: [firstPage, ...remainingPages].flatMap(
-      (page) => page?.data ?? [],
-    ),
-  };
-}
-
 export default function Brands() {
   return (
     <main id="main-content" className="flex-1 bg-[#faf9f6] text-[#171717]">
@@ -65,7 +38,7 @@ export default function Brands() {
 
 async function BrandsContent() {
   const [brandsResult, productsResponse] = await Promise.all([
-    loadAllBrands(),
+    apiServices.getBrands().catch(() => null),
     apiServices.getProducts().catch(() => null),
   ]);
 
