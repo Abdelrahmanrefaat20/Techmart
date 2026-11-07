@@ -159,7 +159,7 @@ export default function Checkout() {
           console.log("Cash order response:", response);
           route.push("/allorders")
           setNumberOfCartItem(0)
-          
+          route.refresh()
         }
 
         return;
