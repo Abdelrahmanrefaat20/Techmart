@@ -226,7 +226,7 @@ class ApiServices {
  
   async getBrands(): Promise<BrandResponse> {
        const response = await fetch(
-      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/brands`,
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/brands?limit=54`,
       {
         method: "GET",
         headers: this.#headers(),
