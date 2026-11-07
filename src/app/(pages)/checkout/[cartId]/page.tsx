@@ -34,9 +34,9 @@ const checkoutSchema = z.object({
       /^01[0125]\d{8}$/,
       "Enter a valid Egyptian mobile number, like 01010700999.",
     ),
-postalCode: z
-  .string()
-  .optional(),
+// postalCode: z
+//   .string()
+//   .optional(),
   paymentMethod: z.enum(["cash", "online"]),
   details: z
     .string()
@@ -108,7 +108,7 @@ export default function Checkout() {
       details: "",
       phone: "",
       city: "",
-      postalCode: "",
+      // postalCode: "",
       paymentMethod: "online",
     },
   });
@@ -137,7 +137,7 @@ export default function Checkout() {
         details: values.details,
         phone: values.phone,
         city: values.city,
-        postalCode: values.postalCode ? Number(values.postalCode) : undefined,
+        // postalCode: values.postalCode ? Number(values.postalCode) : undefined,
       };
 
       if (values.paymentMethod === "cash") {
@@ -317,7 +317,7 @@ export default function Checkout() {
                 )}
               </div>
 
-              <div className="sm:col-span-1">
+              {/* <div className="sm:col-span-1">
                 <label
                   htmlFor="postalCode"
                   className="mb-2 block text-sm font-medium"
@@ -333,7 +333,7 @@ export default function Checkout() {
                   className={`${fieldClass} h-13 px-4`}
                   {...register("postalCode")}
                 />
-              </div>
+              </div> */}
 
               <div className="sm:col-span-2">
                 <label

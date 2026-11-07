@@ -1,5 +1,5 @@
 import { CreateCashOrderResponse } from "@/interfaces/product";
-import type { OrderI } from "@/interfaces/order";
+import type { OrderI, VerifyTokenResponse } from "@/interfaces/order";
 import {
     BrandResponse,
   CartResponse,
@@ -259,7 +259,7 @@ class ApiServices {
   ): Promise<CreateCashOrderResponse> {
     const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL +
-        `/api/v2/orders/${cartId}`,
+        `/api/v1/orders/${cartId}`,
       {
         method: "POST",
         headers: this.#headers(token),
@@ -285,6 +285,21 @@ class ApiServices {
     return Array.isArray(data) ? data : [];
   }
 
+
+  async verifyToken(token:string ):Promise<VerifyTokenResponse> {
+
+       const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/verifyToken`,
+      {
+        method: "GET",
+                headers: this.#headers(token),
+
+      },
+    );
+        const data = await response.json();
+    return data;
+
+  }
 
 
 }

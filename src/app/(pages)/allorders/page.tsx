@@ -56,7 +56,17 @@ export default function AllOrdersPage() {
 async function OrdersContent() {
   const session = await getServerSession(authOptions);
   const token = session?.user?.token;
-  const userId = session?.user?.id;
+
+
+ if (!token) {
+  throw new Error("Unauthorized");
+}
+
+const verifyToken = await apiServices.verifyToken(token);
+
+const userId = verifyToken.decoded.id;
+
+  console.log(userId)
 
   const orders = userId
     ? await apiServices.getUserOrders(userId).catch(() => null)
