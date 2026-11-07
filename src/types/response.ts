@@ -69,4 +69,8 @@ export type SignInResponse = {
     statusMsg?: string
 }
 export type ProductsResponse = ResponseT<ProductI>
+export type CategoriesResponse = ResponseT<CategoryI>
+export type SpecificCategoryResponse = { data: CategoryI }
+export type BrandResponse = ResponseT<BrandI>
+export type SpecificBrandResponse = { data: BrandI }
 export type ProductDetailsResponse = { data: ProductI } 

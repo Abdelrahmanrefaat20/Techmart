@@ -5,13 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import apiServices from "@/services/apiServices";
 import ProductCard from "./ProductCard";
 import ProductsSkeleton from "./ProductsSkeleton";
-import { ProductsPageProps } from "@/interfaces/product";
 
 const numberFormatter = new Intl.NumberFormat("en-US");
-export default async function ProductsPage(
-) {
-
-
+export default async function ProductsPage({
+  category,
+  brand,
+}: {
+  category?: string;
+  brand?: string;
+}) {
   return (
     <main className="flex-1 bg-muted/40">
       <section className="relative overflow-hidden bg-[#1d2c26] text-white">
@@ -47,20 +49,37 @@ export default async function ProductsPage(
       </section>
 
       <Suspense fallback={<ProductsSkeleton />}>
-        <ProductsSection />
+        <ProductsSection category={category} brand={brand} />
       </Suspense>
     </main>
   );
 }
 
-async function ProductsSection() {
-  const { data: products, results } = await apiServices.getProducts();
+async function ProductsSection({
+  category,
+  brand,
+}: {
+  category?: string;
+  brand?: string;
+}) {
+  const { data: products, results } = await apiServices.getProducts(
+    1,
+    category,
+    brand,
+  );
 
   const brandsCount = new Set(products.map((product) => product.brand?._id))
     .size;
   const categoriesCount = new Set(
     products.map((product) => product.category?._id),
   ).size;
+  const brandName = brand ? products[0]?.brand?.name : undefined;
+  const categoryName = category ? products[0]?.category?.name : undefined;
+  const hasFilter = Boolean(category || brand);
+  const heading =
+    brandName ??
+    categoryName ??
+    (brand ? "Brand products" : category ? "Category products" : "All products");
 
   return (
     <section
@@ -70,7 +89,7 @@ async function ProductsSection() {
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="font-heading text-xl font-semibold sm:text-2xl">
-            All products
+            {heading}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Showing {numberFormatter.format(products.length)} of{" "}
@@ -79,13 +98,23 @@ async function ProductsSection() {
             {categoriesCount > 0 && ` · ${categoriesCount} categories`}
           </p>
         </div>
-        <Link
-          href="/categories"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary/80"
-        >
-          Browse categories
-          <ArrowRight className="size-4" />
-        </Link>
+        <div className="flex flex-wrap items-center gap-5">
+          {hasFilter && (
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Clear filter
+            </Link>
+          )}
+          <Link
+            href="/categories"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary/80"
+          >
+            Browse categories
+            <ArrowRight className="size-4" />
+          </Link>
+        </div>
       </div>
 
       {products.length === 0 ? (
@@ -93,7 +122,7 @@ async function ProductsSection() {
           <Package className="size-10 text-muted-foreground" />
           <h3 className="font-heading text-lg font-semibold">No products yet</h3>
           <p className="max-w-sm text-sm text-muted-foreground">
-            We couldn't find any products right now. Please check back soon.
+            We couldn&apos;t find any products right now. Please check back soon.
           </p>
         </div>
       ) : (

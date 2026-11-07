@@ -1,14 +1,24 @@
 import {
+    BrandResponse,
   CartResponse,
+  CategoriesResponse,
   CheckoutResponse,
   ProductDetailsResponse,
   ProductsResponse,
   SignInResponse,
+  SpecificBrandResponse,
+  SpecificCategoryResponse,
 } from "@/types/response";
 
 type ApiHeaders = {
   "content-type": string;
   token?: string;
+};
+
+type ShippingAddress = {
+  details: string;
+  phone: string;
+  city: string;
 };
 
 class ApiServices {
@@ -24,9 +34,15 @@ class ApiServices {
     };
   }
 
-  async getProducts(page: number = 1): Promise<ProductsResponse> {
+  async getProducts(
+    page: number = 1,
+    category?: string,
+    brand?: string,
+  ): Promise<ProductsResponse> {
+    const categoryFilter = category ? `&category=${category}` : "";
+    const brandFilter = brand ? `&brand=${brand}` : "";
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/products?limit=56&page=${page}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/products?limit=56&page=${page}${categoryFilter}${brandFilter}`,
     );
 
     if (!response.ok) {
@@ -126,7 +142,7 @@ class ApiServices {
 
   async checkoutCart(
     cartId: string,
-    shippingAddress: any,
+    shippingAddress: ShippingAddress,
     token?: string,
   ): Promise<CheckoutResponse> {
     const response = await fetch(
@@ -184,6 +200,53 @@ class ApiServices {
     const data = await response.json();
     return data;
   }
+  
+  async getCategories(): Promise<CategoriesResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/categories`,
+      {
+        method: "GET",
+        headers: this.#headers(),
+      },
+    );
+    const data = await response.json();
+    return data;
+  }
+  async getSpecificCategories(id: string): Promise<SpecificCategoryResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/categories/${id}`,
+      {
+        method: "GET",
+        headers: this.#headers(),
+      },
+    );
+    const data = await response.json();
+    return data;
+  }
+  async getBrands(): Promise<BrandResponse> {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/brands`,
+      {
+        method: "GET",
+        headers: this.#headers(),
+      },
+    );
+    const data = await response.json();
+    return data;
+  }
+  async getSpecificBrands(id: string): Promise<SpecificBrandResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/brands/${id}`,
+      {
+        method: "GET",
+        headers: this.#headers(),
+      },
+    );
+    const data = await response.json();
+    return data;
+  }
+
+
 }
 const apiServices = new ApiServices();
 export default apiServices;
