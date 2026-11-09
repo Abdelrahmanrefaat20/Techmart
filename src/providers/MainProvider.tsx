@@ -6,8 +6,9 @@ import RouteTransition from "@/components/layout/Loading/RouteTransition";
 import Navbar from "@/components/layout/Navbar/navbar";
 import { Toaster } from "@/components/ui/toast";
 import CounterContextProvider from "@/contexts/counterContext";
+import WishlistContextProvider from "@/contexts/WishlistContext";
 import { SessionProvider } from "next-auth/react";
-import React, { ReactNode, Suspense } from "react";
+import { ReactNode, Suspense } from "react";
 
 export default function MainProvider({
   children,
@@ -16,6 +17,7 @@ export default function MainProvider({
 }) {
   return (
     <SessionProvider>
+    <WishlistContextProvider>
 
     <CounterContextProvider>
       <Suspense fallback={null}>
@@ -28,6 +30,7 @@ export default function MainProvider({
       <Toaster />
       <Footer />
     </CounterContextProvider>
+    </WishlistContextProvider>
     </SessionProvider>
   );
 }

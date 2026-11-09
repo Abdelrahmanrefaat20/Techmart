@@ -2,8 +2,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { counterContext } from "@/contexts/counterContext";
+import { useWishlist, WishlistContext } from "@/contexts/WishlistContext";
 import { cn } from "cn";
-import { ArrowRight, ShoppingCart, Zap } from "lucide-react";
+import { ArrowRight, Heart, ShoppingCart, Zap } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,6 +34,7 @@ export default function Navbar() {
   const session = useSession();
   const { NumberOfCartItem } = useContext(counterContext);
 
+const { NumberOfWishlistItem } = useWishlist();
   return (
     <div className="sticky top-0 z-1000 bg-white">
       {" "}
@@ -91,6 +93,19 @@ export default function Navbar() {
                     </span>
 
                     <ShoppingCart className="mr-2 h-5 w-5" />
+                  </div>
+                </Link>
+              </>
+            )}
+            {session.status == "authenticated" && (
+              <>
+                <Link href={"/wishlist"}>
+                  <div className="relative">
+                    <span className="absolute bottom-1 inset-e-1 translate-x-1/2 -translate-y-1/2">
+                      <Badge variant="destructive">{NumberOfWishlistItem}</Badge>
+                    </span>
+
+                    <Heart className="mr-2 h-5 w-5  text-red-500" />
                   </div>
                 </Link>
               </>

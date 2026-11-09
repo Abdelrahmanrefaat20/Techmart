@@ -92,3 +92,9 @@ export interface CreateCashOrderResponse {
     __v: number;
   };
 }
+
+export type GetWishlistResponse = {
+  status: string;
+  count: number;
+  data: ProductI[];
+};

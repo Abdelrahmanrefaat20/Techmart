@@ -68,6 +68,13 @@ export type SignInResponse = {
     token?: string;
     statusMsg?: string
 }
+
+
+export type AddToWishlistResponse = {
+  status: string;
+  message: string;
+  data: string[];
+};
 export type ProductsResponse = ResponseT<ProductI>
 export type CategoriesResponse = ResponseT<CategoryI>
 export type SpecificCategoryResponse = { data: CategoryI }

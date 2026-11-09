@@ -1,6 +1,7 @@
-import { CreateCashOrderResponse } from "@/interfaces/product";
+import { CreateCashOrderResponse, GetWishlistResponse } from "@/interfaces/product";
 import type { OrderI, VerifyTokenResponse } from "@/interfaces/order";
 import {
+    AddToWishlistResponse,
     BrandResponse,
   CartResponse,
   CategoriesResponse,
@@ -301,8 +302,42 @@ class ApiServices {
 
   }
 
+  async addProductToWishlist(productId: string, token: string): Promise<AddToWishlistResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/wishlist`,
+      { method: "POST",
+        headers: this.#headers(token),
+        body: JSON.stringify({ productId }),
+      }
+    );
+    const data = await response.json();
+    return data;
+  }
 
+
+  async removeProductFromWishlist(productId: string, token: string): Promise<AddToWishlistResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/wishlist/${productId}`,
+      { method: "DELETE",
+        headers: this.#headers(token),
+      }
+    );
+    const data = await response.json();
+    return data;
+  }
+
+  async getUserWishlist(token: string): Promise<GetWishlistResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/wishlist`,
+      { method: "GET",
+        headers: this.#headers(token),
+      }
+    );
+    const data = await response.json();
+    return data;
+  }
+
+  
 }
-
 const apiServices = new ApiServices();
 export default apiServices;

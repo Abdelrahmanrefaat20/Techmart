@@ -7,6 +7,7 @@ import React, { createContext, ReactNode, useEffect, useState } from "react";
 interface CounterContextType {
   NumberOfCartItem: number;
   setNumberOfCartItem: React.Dispatch<React.SetStateAction<number>>;
+
 }
 
 export const counterContext = createContext<CounterContextType>({
@@ -37,11 +38,12 @@ export default function CounterContextProvider({
       .getUserCart(token)
       .then((response) => setNumberOfCartItem(response?.numOfCartItems ?? 0))
       .catch(() => setNumberOfCartItem(0));
+
   }, [token, status]);
 
   return (
     <counterContext.Provider
-      value={{ NumberOfCartItem, setNumberOfCartItem }}
+      value={{ NumberOfCartItem, setNumberOfCartItem  }}
     >
       {children}
     </counterContext.Provider>

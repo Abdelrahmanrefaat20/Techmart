@@ -4,10 +4,8 @@ import { notFound } from "next/navigation";
 import {
   Check,
   ChevronRight,
-  Heart,
   RotateCcw,
   ShieldCheck,
-  ShoppingCart,
   Star,
   Truck,
 } from "lucide-react";
@@ -17,6 +15,7 @@ import ProductGallery from "@/components/layout/Product/ProductGallery";
 import apiServices from "@/services/apiServices";
 import { cn } from "@/lib/utils";
 import AddToCartBtn from "@/components/layout/Product/AddToCartBtn";
+import WishlistButton from "@/components/layout/Product/WishlistButton";
 
 const priceFormatter = new Intl.NumberFormat("en-EG", {
   style: "currency",
@@ -177,16 +176,12 @@ async function ProductDetails({ params }: ProductDetailsPageProps) {
           </div>
 
           <div className="flex flex-wrap gap-3">
-         
-            <AddToCartBtn  productId={product._id} />
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-full px-6 w-full"
-            >
-              <Heart data-icon="inline-start" />
-              Wishlist
-            </Button>
+            <AddToCartBtn productId={product._id} />
+            <WishlistButton
+              productId={product._id}
+              productTitle={product.title}
+              variant="full"
+            />{" "}
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">
@@ -215,6 +210,7 @@ async function ProductDetails({ params }: ProductDetailsPageProps) {
           <Button
             variant="link"
             className="w-fit px-0"
+            nativeButton={false}
             render={<Link href="/products" />}
           >
             Back to all products
