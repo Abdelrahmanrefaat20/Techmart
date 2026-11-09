@@ -362,6 +362,7 @@ class ApiServices {
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/forgotPasswords`,
       {
         method: "POST",
+         headers: this.#headers(),
         body: JSON.stringify({ email }),
       },
     );
@@ -374,10 +375,13 @@ class ApiServices {
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/verifyResetCode`,
       {
         method: "POST",
+        headers: this.#headers(),
         body: JSON.stringify({ resetCode }),
       },
     );
     const data = await response.json();
+    console.log(data);
+    
     return data;
   }
 
@@ -389,6 +393,7 @@ class ApiServices {
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/resetPassword`,
       {
         method: "PUT",
+        headers: this.#headers(),
         body: JSON.stringify({ email, newPassword }),
       },
     );
