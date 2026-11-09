@@ -1,25 +1,26 @@
 "use client";
 
-import Link from "next/link";
-import {
-  AlertCircle,
-  ArrowRight,
-  ChevronDown,
-  ChevronRight,
-  MapPin,
-  Phone,
-  ShieldCheck,
-  Truck,
-} from "lucide-react";
-import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { toast } from "@/components/ui/toast";
+import { setNumberOfCartItems } from "@/redux/slices/cartSlice";
+import { AppDispatch, RootState } from "@/redux/store";
 import apiServices from "@/services/apiServices";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+    AlertCircle,
+    ArrowRight,
+    ChevronDown,
+    ChevronRight,
+    MapPin,
+    Phone,
+    ShieldCheck,
+    Truck,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useParams , useRouter } from "next/navigation";
-import { useContext } from "react";
-import { counterContext } from "@/contexts/counterContext";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useForm, useWatch } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { z } from "zod";
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black";
 
@@ -36,9 +37,9 @@ const checkoutSchema = z.object({
       /^01[0125]\d{8}$/,
       "Enter a valid Egyptian mobile number, like 01010700999.",
     ),
-// postalCode: z
-//   .string()
-//   .optional(),
+  // postalCode: z
+  //   .string()
+  //   .optional(),
   paymentMethod: z.enum(["cash", "online"]),
   details: z
     .string()
@@ -97,8 +98,12 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 }
 
 export default function Checkout() {
-   const route = useRouter();
-   const {setNumberOfCartItem}= useContext(counterContext)
+  const route = useRouter();
+
+  const dispatch = useDispatch<AppDispatch>();
+  const numberOfCartItems = useSelector(
+    (state: RootState) => state.cart.numberOfCartItems,
+  );
   const {
     register,
     handleSubmit,
@@ -123,7 +128,6 @@ export default function Checkout() {
   const detailsLeft = 200 - (shippingAddress.details?.length ?? 0);
 
   async function onSubmit(values: CheckoutValues) {
-
     try {
       const token = session?.user?.token;
 
@@ -157,9 +161,9 @@ export default function Checkout() {
             type: "success",
           });
           console.log("Cash order response:", response);
-          route.push("/allorders")
-          setNumberOfCartItem(0)
-          route.refresh()
+          route.push("/allorders");
+        dispatch(  setNumberOfCartItems(0))
+          route.refresh();
         }
 
         return;

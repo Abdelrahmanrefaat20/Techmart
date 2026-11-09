@@ -1,14 +1,14 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { counterContext } from "@/contexts/counterContext";
-import { useWishlist, WishlistContext } from "@/contexts/WishlistContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { RootState } from "@/redux/store";
 import { cn } from "cn";
-import { ArrowRight, Heart, ShoppingCart, Zap } from "lucide-react";
+import { Heart, ShoppingCart, Zap } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useContext } from "react";
+import { useSelector } from "react-redux";
 
 const navLinks = [
   {
@@ -32,9 +32,15 @@ const navLinks = [
 export default function Navbar() {
   const pathName = usePathname();
   const session = useSession();
-  const { NumberOfCartItem } = useContext(counterContext);
 
-const { NumberOfWishlistItem } = useWishlist();
+  const { NumberOfWishlistItem } = useWishlist();
+
+
+
+const numberOfCartItems = useSelector(
+  (state: RootState) => state.cart.numberOfCartItems
+);
+
   return (
     <div className="sticky top-0 z-1000 bg-white">
       {" "}
@@ -89,7 +95,7 @@ const { NumberOfWishlistItem } = useWishlist();
                 <Link href={"/cart"}>
                   <div className="relative">
                     <span className="absolute bottom-1 inset-e-1 translate-x-1/2 -translate-y-1/2">
-                      <Badge variant="destructive">{NumberOfCartItem}</Badge>
+                      <Badge variant="destructive">{numberOfCartItems}</Badge>
                     </span>
 
                     <ShoppingCart className="mr-2 h-5 w-5" />
@@ -102,7 +108,9 @@ const { NumberOfWishlistItem } = useWishlist();
                 <Link href={"/wishlist"}>
                   <div className="relative">
                     <span className="absolute bottom-1 inset-e-1 translate-x-1/2 -translate-y-1/2">
-                      <Badge variant="destructive">{NumberOfWishlistItem}</Badge>
+                      <Badge variant="destructive">
+                        {NumberOfWishlistItem}
+                      </Badge>
                     </span>
 
                     <Heart className="mr-2 h-5 w-5  text-red-500" />
@@ -130,11 +138,12 @@ const { NumberOfWishlistItem } = useWishlist();
 
             {session.status == "authenticated" && (
               <>
-                <Button 
-                onClick={()=> signOut({
-                  callbackUrl:"/auth/signin"
-                })}
-                
+                <Button
+                  onClick={() =>
+                    signOut({
+                      callbackUrl: "/auth/signin",
+                    })
+                  }
                   className="bg-white flex items-center gap-2 rounded-full border border-[#d9dfd3] px-4 py-2.5 text-xs font-semibold transition-colors hover:bg-[#eaf1e0] text-black"
                 >
                   Sign Out

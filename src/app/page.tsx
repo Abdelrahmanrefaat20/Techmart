@@ -1,19 +1,19 @@
-import Image from "next/image";
-import Link from "next/link";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  Banknote,
-  Package,
-  ShieldCheck,
-  Sparkles,
-  Star,
-  Truck,
-} from "lucide-react";
-import apiServices from "@/services/apiServices";
 import ProductCard from "@/components/layout/Product/ProductCard";
 import type { BrandI, CategoryI } from "@/interfaces/product";
 import { formatPrice } from "@/lib/utils";
+import apiServices from "@/services/apiServices";
+import {
+    ArrowRight,
+    ArrowUpRight,
+    Banknote,
+    Package,
+    ShieldCheck,
+    Sparkles,
+    Star,
+    Truck,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black";
@@ -97,6 +97,8 @@ export default async function Home() {
     products.map((product) => product.category?._id).filter(Boolean),
   ).size;
 
+
+
   return (
     <main id="main-content" className="flex-1 bg-[#faf9f6] text-[#171717]">
       {/* Hero */}
@@ -119,9 +121,8 @@ export default async function Home() {
             <div>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-medium text-white/80">
                 <Sparkles size={14} className="text-[#d1f391]" aria-hidden="true" />
-                New season picks
+                New season picks  
               </span>
-
               <h1 className="mt-6 max-w-xl text-balance text-3xl font-semibold leading-[1.05] tracking-[-0.04em] sm:text-4xl lg:text-[52px]">
                 Everyday tech,
                 <br className="hidden sm:block" /> picked with care.

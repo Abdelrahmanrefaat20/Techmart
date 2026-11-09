@@ -1,22 +1,23 @@
 "use client";
+import { formatPrice } from "@/lib/utils";
+import { setNumberOfCartItems } from "@/redux/slices/cartSlice";
+import { AppDispatch, RootState } from "@/redux/store";
+import apiServices from "@/services/apiServices";
+import type { CartResponse } from "@/types/response";
+import {
+    ArrowRight,
+    ChevronRight,
+    Loader2,
+    ShoppingBag,
+    Trash2
+} from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  ArrowRight,
-  ChevronRight,
-  Loader2,
-  ShoppingBag,
-  Tag,
-  Trash2,
-} from "lucide-react";
-import { formatPrice } from "@/lib/utils";
-import type { CartResponse } from "@/types/response";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import CartProduct from "./CartProduct";
-import apiServices from "@/services/apiServices";
-import { useSession } from "next-auth/react";
-import { useContext, useEffect, useState } from "react";
-import { counterContext } from "@/contexts/counterContext";
 
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black";
@@ -32,22 +33,22 @@ export default function CartContents({
   const [innerCartResponse, setInnerCartResponse] = useState(cartResponse);
   const products = innerCartResponse?.data.products ?? [];
   const [isClearing, setIsClearing] = useState(false);
-  const { setNumberOfCartItem } = useContext(counterContext);
   const { data: session } = useSession();
   const token = session?.user?.token;
-
+  const dispatch = useDispatch<AppDispatch>();
+  const numberOfCartItems = useSelector(
+    (state: RootState) => state.cart.numberOfCartItems,
+  );
   useEffect(() => {
-    setNumberOfCartItem(cartResponse?.numOfCartItems ?? 0);
-    if (cartResponse != innerCartResponse) {
-      setInnerCartResponse(cartResponse);
-    }
+    setInnerCartResponse(cartResponse);
+    dispatch(setNumberOfCartItems(cartResponse?.numOfCartItems ?? 0));
   }, []);
 
   async function removeProductFromCart(productId: string) {
     const response = await apiServices.removeProductFromCart(productId, token);
     // setState => rerender
     setInnerCartResponse(response);
-    setNumberOfCartItem(response?.numOfCartItems);
+    dispatch(setNumberOfCartItems(response?.numOfCartItems ?? 0));
   }
 
   async function clearCart() {
@@ -56,7 +57,7 @@ export default function CartContents({
     // setState => rerender
     setInnerCartResponse(response);
     setIsClearing(false);
-    setNumberOfCartItem(0);
+     dispatch(setNumberOfCartItems(response?.numOfCartItems ?? 0));
   }
   async function updateProductCount(productId: string, count: number) {
     const response = await apiServices.UpdateCartProductQuantity(
@@ -65,6 +66,9 @@ export default function CartContents({
       token,
     );
     setInnerCartResponse(response);
+     dispatch(
+    setNumberOfCartItems(response?.numOfCartItems ?? 0)
+  );
   }
 
   return (
@@ -212,7 +216,7 @@ export default function CartContents({
                 Promo codes are not available yet.
               </p> */}
               <Link
-                href={"/checkout/"+ cartResponse?.cartId}
+                href={"/checkout/" + cartResponse?.cartId}
                 aria-disabled
                 type="button"
                 aria-describedby="checkout-note"

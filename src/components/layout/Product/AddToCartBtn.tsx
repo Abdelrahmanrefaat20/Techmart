@@ -1,18 +1,21 @@
 "use client";
-import { useContext, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Loader2, ShoppingCart } from "lucide-react";
-import { useSession } from "next-auth/react";
-import apiServices from "@/services/apiServices";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
-import { counterContext } from "@/contexts/counterContext";
+import { setNumberOfCartItems } from "@/redux/slices/cartSlice";
+import { AppDispatch } from "@/redux/store";
+import apiServices from "@/services/apiServices";
+import { Loader2, ShoppingCart } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 export default function AddToCartBtn({ productId }: { productId: string }) {
   const [IsAddingToCart, setIsAddingToCart] = useState<boolean>(false);
-  const { setNumberOfCartItem } = useContext(counterContext);
   const { data: session } = useSession();
   const router = useRouter();
+
+  const dispatch = useDispatch<AppDispatch>();
 
   async function addProductToCart() {
     const token = session?.user?.token;
@@ -30,7 +33,8 @@ export default function AddToCartBtn({ productId }: { productId: string }) {
     setIsAddingToCart(true);
     try {
       const response = await apiServices.addProductToCart(productId, token);
-      setNumberOfCartItem(response?.numOfCartItems ?? 0);
+
+      dispatch(setNumberOfCartItems(response?.numOfCartItems ?? 0));
       toast.add({
         title: response.status ?? response.statusMsg,
         description: response.message,
