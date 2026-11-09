@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { RootState } from "@/redux/store";
 import { cn } from "cn";
-import { Heart, ShoppingCart, Zap } from "lucide-react";
+import { Heart, ShoppingCart, UserRound, Zap } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -90,6 +90,20 @@ const numberOfCartItems = useSelector(
           </nav>
 
           <div className="flex gap-3 items-center">
+            {session.status == "authenticated" && (
+              <>
+                <Link
+                  href="/profile"
+                  aria-label="Your profile"
+                  className={cn(
+                    "flex size-9 items-center justify-center rounded-full border border-[#d9dfd3] text-[#1d2c26] transition-colors hover:bg-[#eaf1e0]",
+                    pathName.startsWith("/profile") && "bg-[#eaf1e0]",
+                  )}
+                >
+                  <UserRound className="h-4 w-4" />
+                </Link>
+              </>
+            )}
             {session.status == "authenticated" && (
               <>
                 <Link href={"/cart"}>

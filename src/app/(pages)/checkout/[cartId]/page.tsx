@@ -559,7 +559,7 @@ export default function Checkout() {
             <p className="mt-4 px-1 text-center text-xs text-neutral-500">
               Need help with your order?{" "}
               <Link
-                href="/Profile"
+                href="/profile"
                 className={`font-medium text-neutral-900 underline underline-offset-2 ${focus}`}
               >
                 Contact support

@@ -304,6 +304,16 @@ export default function SignIn() {
               </Link>
             </p>
 
+               <p className="mt-6 text-center text-xs leading-6 text-[#7a8274]">
+            Forget password ?  
+              <Link
+                href="/forgot-password"
+                className="inline-flex items-center gap-1 font-semibold text-[#4f693d] underline-offset-4 hover:underline"
+              >
+                 Rest password <ArrowRight size={12} />
+              </Link>
+            </p>
+
             <div className="mt-7 flex items-center gap-3 text-[10px] text-[#909887]">
               <span className="h-px flex-1 bg-[#e7eadf]" /> A LITTLE MORE
               POSSIBILITY <span className="h-px flex-1 bg-[#e7eadf]" />

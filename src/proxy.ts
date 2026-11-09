@@ -62,6 +62,9 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/cart/") ||
     pathname === "/allorders" ||
     pathname.startsWith("/allorders/");
+    pathname==="/wishlist" ||
+    pathname==="/profile" 
+
 
   if (isAuthenticated && isAuthPage) {
     return NextResponse.redirect(new URL("/products", request.url));
@@ -75,5 +78,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/cart/:path*", "/allorders/:path*", "/auth/signin", "/auth/signup"],
+  matcher: ["/cart/:path*", "/allorders/:path*", "/auth/signin", "/auth/signup", "/wishlist", "/profile"],
 };

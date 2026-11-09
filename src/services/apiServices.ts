@@ -1,8 +1,15 @@
-import { CreateCashOrderResponse, GetWishlistResponse } from "@/interfaces/product";
-import type { OrderI, VerifyTokenResponse } from "@/interfaces/order";
 import {
-    AddToWishlistResponse,
-    BrandResponse,
+  CreateCashOrderResponse,
+  GetWishlistResponse,
+} from "@/interfaces/product";
+import type {
+  forgotPasswordResponse,
+  OrderI,
+  VerifyTokenResponse,
+} from "@/interfaces/order";
+import {
+  AddToWishlistResponse,
+  BrandResponse,
   CartResponse,
   CategoriesResponse,
   CheckoutResponse,
@@ -204,7 +211,7 @@ class ApiServices {
     const data = await response.json();
     return data;
   }
-  
+
   async getCategories(): Promise<CategoriesResponse> {
     const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/categories`,
@@ -227,9 +234,9 @@ class ApiServices {
     const data = await response.json();
     return data;
   }
- 
+
   async getBrands(): Promise<BrandResponse> {
-       const response = await fetch(
+    const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/brands?limit=54`,
       {
         method: "GET",
@@ -240,7 +247,6 @@ class ApiServices {
     return data;
   }
 
- 
   async getSpecificBrands(id: string): Promise<SpecificBrandResponse> {
     const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/brands/${id}`,
@@ -253,14 +259,13 @@ class ApiServices {
     return data;
   }
 
- async createCashOrder(
+  async createCashOrder(
     cartId: string,
     shippingAddress: ShippingAddress,
     token?: string,
   ): Promise<CreateCashOrderResponse> {
     const response = await fetch(
-      process.env.NEXT_PUBLIC_BASE_URL +
-        `/api/v1/orders/${cartId}`,
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/orders/${cartId}`,
       {
         method: "POST",
         headers: this.#headers(token),
@@ -272,7 +277,6 @@ class ApiServices {
     const data = await response.json();
     return data;
   }
-
 
   async getUserOrders(userId: string): Promise<OrderI[]> {
     console.log("Fetching orders for user:", userId);
@@ -286,41 +290,41 @@ class ApiServices {
     return Array.isArray(data) ? data : [];
   }
 
-
-  async verifyToken(token:string ):Promise<VerifyTokenResponse> {
-
-       const response = await fetch(
+  async verifyToken(token: string): Promise<VerifyTokenResponse> {
+    const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/verifyToken`,
       {
         method: "GET",
-                headers: this.#headers(token),
-
-      },
-    );
-        const data = await response.json();
-    return data;
-
-  }
-
-  async addProductToWishlist(productId: string, token: string): Promise<AddToWishlistResponse> {
-    const response = await fetch(
-      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/wishlist`,
-      { method: "POST",
         headers: this.#headers(token),
-        body: JSON.stringify({ productId }),
-      }
+      },
     );
     const data = await response.json();
     return data;
   }
 
+  async addProductToWishlist(
+    productId: string,
+    token: string,
+  ): Promise<AddToWishlistResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/wishlist`,
+      {
+        method: "POST",
+        headers: this.#headers(token),
+        body: JSON.stringify({ productId }),
+      },
+    );
+    const data = await response.json();
+    return data;
+  }
 
-  async removeProductFromWishlist(productId: string, token: string): Promise<AddToWishlistResponse> {
+  async removeProductFromWishlist(
+    productId: string,
+    token: string,
+  ): Promise<AddToWishlistResponse> {
     const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/wishlist/${productId}`,
-      { method: "DELETE",
-        headers: this.#headers(token),
-      }
+      { method: "DELETE", headers: this.#headers(token) },
     );
     const data = await response.json();
     return data;
@@ -329,15 +333,68 @@ class ApiServices {
   async getUserWishlist(token: string): Promise<GetWishlistResponse> {
     const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/wishlist`,
-      { method: "GET",
-        headers: this.#headers(token),
-      }
+      { method: "GET", headers: this.#headers(token) },
     );
     const data = await response.json();
     return data;
   }
 
-  
+  async changePassword(
+    token: string,
+    currentPass: string,
+    newPass: string,
+    reNewPass: string,
+  ): Promise<SignInResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/users/changeMyPassword`,
+      {
+        method: "PUT",
+        headers: this.#headers(token),
+        body: JSON.stringify({ currentPass, newPass, reNewPass }),
+      },
+    );
+    const data = await response.json();
+    return data;
+  }
+
+  async forgetPassword(email: string): Promise<forgotPasswordResponse> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/forgotPasswords`,
+      {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      },
+    );
+    const data = await response.json();
+    return data;
+  }
+
+  async verifyResetCode(resetCode: string): Promise<{ status: string }> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/verifyResetCode`,
+      {
+        method: "POST",
+        body: JSON.stringify({ resetCode }),
+      },
+    );
+    const data = await response.json();
+    return data;
+  }
+
+  async resetPassword(
+    email: string,
+    newPassword: string,
+  ): Promise<{ token: string }> {
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/auth/resetPassword`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ email, newPassword }),
+      },
+    );
+    const data = await response.json();
+    return data;
+  }
 }
 const apiServices = new ApiServices();
 export default apiServices;

@@ -56,3 +56,8 @@ export interface VerifyTokenResponse {
     exp: number;
   };
 }
+
+export interface forgotPasswordResponse {
+  statusMsg: string;
+  message: string;
+}
