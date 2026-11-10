@@ -341,16 +341,16 @@ class ApiServices {
 
   async changePassword(
     token: string,
-    currentPass: string,
-    newPass: string,
-    reNewPass: string,
+    currentPassword: string,
+    password: string,
+    rePassword: string,
   ): Promise<SignInResponse> {
     const response = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + `/api/v1/users/changeMyPassword`,
       {
         method: "PUT",
         headers: this.#headers(token),
-        body: JSON.stringify({ currentPass, newPass, reNewPass }),
+        body: JSON.stringify({ currentPassword, password, rePassword }),
       },
     );
     const data = await response.json();
