@@ -220,16 +220,11 @@ export default function CartContents({
                 aria-disabled
                 type="button"
                 aria-describedby="checkout-note"
-                className="mt-5 flex min-h-13 w-full items-center justify-center gap-4 rounded-full bg-black px-5 text-sm font-medium text-white opacity-50 disabled:cursor-not-allowed"
+                className="mt-5 flex min-h-13 w-full items-center justify-center gap-4 rounded-full bg-green-700 px-5 text-sm font-medium text-white opacity-50 disabled:cursor-not-allowed"
               >
                 Go to Checkout <ArrowRight size={20} aria-hidden="true" />
               </Link>
-              <p
-                id="checkout-note"
-                className="mt-2 text-center text-xs text-neutral-500"
-              >
-                Checkout is coming soon.
-              </p>
+       
             </aside>
           </div>
         )}
