@@ -40,11 +40,17 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.role = user.role ?? "";
         token.token = user.token ?? "";
         token.id = user.id ?? "";
+      }
+
+      // `useSession().update({ token })` lands here. Used after a password
+      // change, where the API issues a new JWT and rejects the old one.
+      if (trigger === "update" && typeof session?.token === "string") {
+        token.token = session.token;
       }
 
       return token;
