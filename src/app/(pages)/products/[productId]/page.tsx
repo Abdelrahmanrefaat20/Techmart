@@ -16,6 +16,7 @@ import apiServices from "@/services/apiServices";
 import { cn } from "@/lib/utils";
 import AddToCartBtn from "@/components/layout/Product/AddToCartBtn";
 import WishlistButton from "@/components/layout/Product/WishlistButton";
+import GetReview from "@/components/Review/GetReview";
 
 const priceFormatter = new Intl.NumberFormat("en-EG", {
   style: "currency",
@@ -217,6 +218,12 @@ async function ProductDetails({ params }: ProductDetailsPageProps) {
           </Button>
         </div>
       </div>
+
+      <GetReview
+        productId={product._id}
+        ratingsAverage={product.ratingsAverage}
+        ratingsQuantity={product.ratingsQuantity}
+      />
     </div>
   );
 }

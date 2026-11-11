@@ -3,6 +3,10 @@ import {
   GetWishlistResponse,
 } from "@/interfaces/product";
 import type {
+  ProductReviewsResponse,
+  ReviewMutationResponse,
+} from "@/interfaces/review";
+import type {
   forgotPasswordResponse,
   OrderI,
   VerifyTokenResponse,
@@ -399,6 +403,91 @@ class ApiServices {
     );
     const data = await response.json();
     return data;
+  }
+
+  async getProductReviews(
+    productId: string,
+    page: number = 1,
+    limit: number = 6,
+  ): Promise<ProductReviewsResponse> {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/products/${productId}/reviews?page=${page}&limit=${limit}`,
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch reviews");
+    }
+
+    const data: ProductReviewsResponse = await response.json();
+
+    return data;
+  }
+
+  async createReview(
+    token: string,
+    productId: string,
+    review: string,
+    rating: number,
+  ): Promise<ReviewMutationResponse> {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/products/${productId}/reviews`,
+      {
+        method: "POST",
+        headers: this.#headers(token),
+        body: JSON.stringify({ review, rating }),
+      },
+    );
+
+    return this.#reviewMutationResult(response);
+  }
+
+  async updateReview(
+    token: string,
+    reviewId: string,
+    review: string,
+    rating: number,
+  ): Promise<ReviewMutationResponse> {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/reviews/${reviewId}`,
+      {
+        method: "PUT",
+        headers: this.#headers(token),
+        body: JSON.stringify({ review, rating }),
+      },
+    );
+
+    return this.#reviewMutationResult(response);
+  }
+
+  async deleteReview(
+    token: string,
+    reviewId: string,
+  ): Promise<ReviewMutationResponse> {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/reviews/${reviewId}`,
+      {
+        method: "DELETE",
+        headers: this.#headers(token),
+      },
+    );
+
+    return this.#reviewMutationResult(response);
+  }
+
+  /** The API answers 204 on delete and JSON (sometimes empty) on errors. */
+  async #reviewMutationResult(
+    response: Response,
+  ): Promise<ReviewMutationResponse> {
+    if (response.status === 204) {
+      return { ok: true };
+    }
+
+    const data = await response.json().catch(() => ({}));
+
+    return {
+      ...data,
+      ok: response.ok,
+    };
   }
 }
 const apiServices = new ApiServices();
